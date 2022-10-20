@@ -1,25 +1,52 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import "./styles.css";
 
-function App() {
+const App = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await fetch("https://dummyjson.com/users");
+
+      const data = await response.json();
+
+      console.log(data.users);
+      setUsers(data.users);
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <input
+        type="text"
+        placeholder="Search..."
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
+      {users
+        .filter((data) => {
+          if (searchTerm === "") {
+            return data;
+          } else if (
+            data.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            data.lastName.toLowerCase().includes(searchTerm.toLowerCase())
+          ) {
+            return data;
+          }
+        })
+        .map((data, index) => {
+          return (
+            <div className="user" key={index}>
+              <p>
+                {data.firstName} {data.lastName}
+              </p>
+            </div>
+          );
+        })}
     </div>
   );
-}
+};
 
 export default App;
